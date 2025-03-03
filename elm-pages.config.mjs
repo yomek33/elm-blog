@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import adapter from "elm-pages/adapter/netlify.js";
-
+import dotenv from "dotenv";
+dotenv.config();
 export default {
   vite: defineConfig({}),
   adapter,
