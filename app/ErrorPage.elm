@@ -71,6 +71,7 @@ view error model =
 
             InternalError string ->
                 "Unexpected Error"
+    
     }
 
 
