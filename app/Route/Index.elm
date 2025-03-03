@@ -26,10 +26,6 @@ type alias RouteParams =
     {}
 
 
-type alias Data =
-    { message : String
-    }
-
 
 type alias ActionData =
     {}
@@ -42,13 +38,33 @@ route =
         , data = data
         }
         |> RouteBuilder.buildNoState { view = view }
+type alias Data =
+    { posts : List Post }
 
-
+type alias Post =
+    { slug : String
+    , title : String
+    , date : String
+    }
 data : BackendTask FatalError Data
 data =
     BackendTask.succeed Data
         |> BackendTask.andMap
-            (BackendTask.succeed "Hello!")
+            (BackendTask.succeed
+                [ { slug = "first-post"
+                  , title = "はじめての投稿"
+                  , date = "2024-03-20"
+                  }
+                , { slug = "second-post"
+                  , title = "2番目の投稿"
+                  , date = "2024-03-21"
+                  }
+                , { slug = "third-post"
+                  , title = "3番目の投稿"
+                  , date = "2024-03-22"
+                  }
+                ]
+            )
 
 
 head :
@@ -76,13 +92,23 @@ view :
     -> Shared.Model
     -> View (PagesMsg Msg)
 view app shared =
-    { title = "elm-pages is running"
+    { title = "Blog Posts"
     , body =
-        [ Html.h1 [] [ Html.text "elm-pages is up and running!" ]
-        , Html.p []
-            [ Html.text <| "The message is: " ++ app.data.message
-            ]
-        , Route.Blog__Slug_ { slug = "hello" }
-            |> Route.link [] [ Html.text "My blog post" ]
+        [ Html.h1 [] [ Html.text "ブログ記事一覧" ]
+        , Html.ul []
+            (List.map
+                (\post ->
+                    Html.li []
+                        [ Route.Blog__Slug_ { slug = post.slug }
+                            |> Route.link []
+                                [ Html.div []
+                                    [ Html.text post.title
+                                    , Html.small [] [ Html.text (" - " ++ post.date) ]
+                                    ]
+                                ]
+                        ]
+                )
+                app.data.posts
+            )
         ]
     }
