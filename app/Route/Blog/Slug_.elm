@@ -37,15 +37,11 @@ type alias ActionData =
     {}
 
 
--- ヘルパー: slug によるポスト取得
-
 fetchPost : RouteParams -> BackendTask FatalError Microcms.Post
 fetchPost params =
     Microcms.envTask
         |> BackendTask.andThen (\env -> Microcms.getPost env params.slug)
 
-
--- データロード関数
 
 data : RouteParams -> BackendTask FatalError Data
 data routeParams =
@@ -53,7 +49,6 @@ data routeParams =
         |> BackendTask.map (\post -> { post = post })
 
 
--- ルート定義
 
 route : StatelessRoute RouteParams Data ActionData
 route =
@@ -69,7 +64,6 @@ route =
         |> RouteBuilder.buildNoState { view = view }
 
 
--- ヘッドタグ（SEO用）
 
 head : App Data ActionData RouteParams -> List Head.Tag
 head app =
@@ -87,9 +81,6 @@ head app =
         , title = app.data.post.title
         }
         |> Seo.website
-
-
--- ビュー描画
 
 view : App Data ActionData RouteParams -> Shared.Model -> View (PagesMsg Msg)
 view app _ =
