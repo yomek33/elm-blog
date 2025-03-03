@@ -4,17 +4,23 @@ import BackendTask exposing (BackendTask)
 import FatalError exposing (FatalError)
 import Head
 import Head.Seo as Seo
-import Html
+import Html exposing (div, h1, text)
 import Pages.Url
 import PagesMsg exposing (PagesMsg)
 import RouteBuilder exposing (App, StatelessRoute)
 import Shared
 import View exposing (View)
+import Microcms
 
+import Server.Request
+import Server.Response
+import ErrorPage
+
+
+-- MODEL & MESSAGE
 
 type alias Model =
     {}
-
 
 type alias Msg =
     ()
@@ -23,42 +29,48 @@ type alias Msg =
 type alias RouteParams =
     { slug : String }
 
-
-route : StatelessRoute RouteParams Data ActionData
-route =
-    RouteBuilder.preRender
-        { head = head
-        , pages = pages
-        , data = data
-        }
-        |> RouteBuilder.buildNoState { view = view }
-
-
-pages : BackendTask FatalError (List RouteParams)
-pages =
-    BackendTask.succeed
-        [ { slug = "hello" }
-        ]
-
-
 type alias Data =
-    { something : String
-    }
-
+    { post : Microcms.Post }
 
 type alias ActionData =
     {}
 
 
+-- ヘルパー: slug によるポスト取得
+
+fetchPost : RouteParams -> BackendTask FatalError Microcms.Post
+fetchPost params =
+    Microcms.envTask
+        |> BackendTask.andThen (\env -> Microcms.getPost env params.slug)
+
+
+-- データロード関数
+
 data : RouteParams -> BackendTask FatalError Data
 data routeParams =
-    BackendTask.map Data
-        (BackendTask.succeed "Hi")
+    fetchPost routeParams
+        |> BackendTask.map (\post -> { post = post })
 
 
-head :
-    App Data ActionData RouteParams
-    -> List Head.Tag
+-- ルート定義
+
+route : StatelessRoute RouteParams Data ActionData
+route =
+    RouteBuilder.serverRender
+        { head = head
+        , data = \routeParams _ ->
+            fetchPost routeParams
+                |> BackendTask.map (\post -> { post = post })
+                |> BackendTask.map Server.Response.render
+        , action = \_ _ ->
+            BackendTask.succeed (Server.Response.render {})
+        }
+        |> RouteBuilder.buildNoState { view = view }
+
+
+-- ヘッドタグ（SEO用）
+
+head : App Data ActionData RouteParams -> List Head.Tag
 head app =
     Seo.summary
         { canonicalUrlOverride = Nothing
@@ -71,16 +83,24 @@ head app =
             }
         , description = "TODO"
         , locale = Nothing
-        , title = "TODO title" -- metadata.title -- TODO
+        , title = app.data.post.title
         }
         |> Seo.website
 
 
-view :
-    App Data ActionData RouteParams
-    -> Shared.Model
-    -> View (PagesMsg Msg)
-view app sharedModel =
-    { title = "Placeholder - Blog.Slug_"
-    , body = [ Html.text "You're on the page Blog.Slug_" ]
+-- ビュー描画
+
+view : App Data ActionData RouteParams -> Shared.Model -> View (PagesMsg Msg)
+view app _ =
+    { title = app.data.post.title
+    , body =
+        [ div []
+            [ h1 [] [ text app.data.post.title ]
+            , case app.data.post.content of
+                Just content ->
+                    div [] [ text content ]
+                Nothing ->
+                    text ""
+            ]
+        ]
     }
