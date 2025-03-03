@@ -29,14 +29,6 @@ type alias RouteParams =
     { slug : String }
 
 
-route : StatelessRoute RouteParams Data ActionData
-route =
-    RouteBuilder.preRender
-        { head = head
-        , pages = pages
-        , data = data
-        }
-        |> RouteBuilder.buildNoState { view = view }
 
 pages : BackendTask FatalError (List RouteParams)
 pages =
@@ -48,35 +40,29 @@ pages =
 
 
 type alias Data =
-    { category : Microcms.Category
-    , posts : List Microcms.Post
+    { posts : List Microcms.Post
+    , category : String
     }
 
-
-
+fetchPosts : RouteParams -> BackendTask FatalError Data
+fetchPosts params =
+    Microcms.envTask
+        |> BackendTask.andThen 
+            (\env ->
+                BackendTask.map2 Data
+                    (Microcms.getPostsByCategory env params.slug)
+                    (BackendTask.succeed params.slug)
+            )
 type alias ActionData =
     {}
-data : RouteParams -> BackendTask FatalError Data
-data routeParams =
-    Microcms.envTask
-        |> BackendTask.andThen (\env ->
-            Microcms.getCategories env
-                |> BackendTask.andThen (\categories ->
-                    case List.filter (\cat -> cat.slug == routeParams.slug) categories of
-                        [] ->
-                            BackendTask.fail (FatalError.fromString "Category not found")
-
-                        category :: _ ->
-                            Microcms.getPostsByCategory env category.slug
-                                |> BackendTask.map (\posts ->
-                                    { category = category
-                                    , posts = posts
-                                    }
-                                )
-                )
-        )
-
-
+route : StatelessRoute RouteParams Data ActionData
+route =
+    RouteBuilder.preRender
+        { head = head
+        , pages = pages
+        , data = fetchPosts
+        }
+        |> RouteBuilder.buildNoState { view = view }
 
 head :
     App Data ActionData RouteParams
@@ -100,9 +86,9 @@ head app =
 
 view : App Data ActionData RouteParams -> Shared.Model -> View (PagesMsg Msg)
 view app _ =
-    { title = app.data.category.name ++ " の記事一覧"
+    { title = app.data.category ++ " の記事一覧"
     , body =
-        [ h1 [] [ text (app.data.category.name ++ " の記事一覧") ]
+        [ h1 [] [ text (app.data.category ++ " の記事一覧") ]
         , ul []
             (List.map
                 (\post ->

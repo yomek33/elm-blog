@@ -91,9 +91,21 @@ getCategories env =
 
 
 getPostsByCategory : Env -> String -> BackendTask FatalError (List Post)
-getPostsByCategory env categoryId =
-    httpGet env ("/post?filters=categories[contains]" ++ categoryId ++ "&orders=-publishDate") postsDecoder
-
+getPostsByCategory env categorySlug =
+    -- First get all categories
+    getCategories env
+        |> BackendTask.andThen
+            (\categories ->
+                -- Find the category with matching slug
+                case List.filter (\category -> category.slug == categorySlug) categories of
+                    category :: _ ->
+                        -- Use the category ID to filter posts
+                        httpGet env ("/post?filters=categories[contains]" ++ category.id ++ "&orders=-publishDate") postsDecoder
+                    
+                    [] ->
+                        -- If category not found, return empty list
+                        BackendTask.succeed []
+            )
 
 postsDecoder : Decoder (List Post)
 postsDecoder =
