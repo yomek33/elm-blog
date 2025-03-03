@@ -15,6 +15,7 @@ import Microcms
 import Server.Request
 import Server.Response
 import ErrorPage
+import HtmlParser
 
 
 -- MODEL & MESSAGE
@@ -98,7 +99,7 @@ view app _ =
             [ h1 [] [ text app.data.post.title ]
             , case app.data.post.content of
                 Just content ->
-                    div [] [ text content ]
+                   HtmlParser.parseHtml content
                 Nothing ->
                     text ""
             ]
