@@ -13,6 +13,7 @@ import RouteBuilder exposing (App, StatelessRoute)
 import Shared
 import View exposing (View)
 import Microcms
+import Html.Attributes 
 
 
 -- 型定義
@@ -34,17 +35,19 @@ type alias ActionData =
 
 
 type alias Data =
-    { posts : List Microcms.Post }
-
-
--- データ取得
+    { posts : List Microcms.Post
+    , categories : List Microcms.Category
+    }
 
 fetchData : BackendTask FatalError Data
 fetchData =
     Microcms.envTask
-        |> BackendTask.andThen Microcms.getPosts
-        |> BackendTask.map (\posts -> { posts = posts })
-
+        |> BackendTask.andThen
+            (\env ->
+                BackendTask.map2 Data
+                    (Microcms.getPosts env)
+                    (Microcms.getCategories env)
+            )
 
 -- ルート定義
 
@@ -79,28 +82,50 @@ head app =
         }
         |> Seo.website
 
-
--- ビュー描画
-
 view : App Data ActionData RouteParams -> Shared.Model -> View (PagesMsg Msg)
 view app _ =
     { title = "Blog Posts"
     , body =
-        [ h1 [] [ text "ブログ記事一覧" ]
-        , ul []
-            (List.map
-                (\post ->
-                    li []
-                        [ Route.Blog__Slug_ { slug = post.slug }
-                            |> Route.link []
-                                [ Html.div []
-                                    [ text post.title
-                                    , small [] [ text (" - " ++ post.publishedAt) ]
-                                    ]
+        [ Html.div [ Html.Attributes.style "display" "flex" ]
+            [ -- メインコンテンツ（記事一覧）
+              Html.div [ Html.Attributes.style "flex" "3" ]
+                [ h1 [] [ text "ブログ記事一覧" ]
+                , ul []
+                    (List.map
+                        (\post ->
+                            li []
+                                [ Route.Blog__Slug_ { slug = post.slug }
+                                    |> Route.link []
+                                        [ Html.div []
+                                            [ text post.title
+                                            , small [] [ text (" - " ++ post.publishedAt) ]
+                                            ]
+                                        ]
                                 ]
-                        ]
-                )
-                app.data.posts
-            )
+                        )
+                        app.data.posts
+                    )
+                ]
+
+            -- サイドバー
+            , Html.div
+                [ Html.Attributes.style "flex" "1"
+                , Html.Attributes.style "padding-left" "20px"
+                , Html.Attributes.style "border-left" "1px solid #ccc"
+                ]
+                [ h1 [] [ text "カテゴリ一覧" ]
+                , ul []
+                    (List.map
+                        (\category ->
+                            li []
+                                [ Route.Category__Slug_ { slug = category.slug }
+                                    |> Route.link []
+                                        [ text category.name ]
+                                ]
+                        )
+                        app.data.categories
+                    )
+                ]
+            ]
         ]
     }

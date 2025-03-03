@@ -53,11 +53,6 @@ type alias Category =
     , slug : String
     }
 
-
-{-| 共通の GET リクエスト関数
-
-    Env、パス、デコーダーを受け取り、HTTP GET を実行します。
--}
 httpGet : Env -> String -> Decoder a -> BackendTask FatalError a
 httpGet env path decoder =
     let
