@@ -4,7 +4,7 @@ import BackendTask exposing (BackendTask)
 import FatalError exposing (FatalError)
 import Head
 import Head.Seo as Seo
-import Html exposing (h1, li, small, text, ul)
+import Html exposing (h1,h3, li, small, text, ul, div)
 import Pages.Url
 import PagesMsg exposing (PagesMsg)
 import UrlPath
@@ -13,10 +13,11 @@ import RouteBuilder exposing (App, StatelessRoute)
 import Shared
 import View exposing (View)
 import Microcms
-import Html.Attributes 
-
-
--- 型定義
+import Html exposing ( h1, li, text, ul)
+import Html.Attributes exposing (class, style)
+import Pages.Manifest.Category exposing (utilities)
+import Util exposing(trimDate)
+import Component.List
 
 type alias Model =
     {}
@@ -66,66 +67,29 @@ head : App Data ActionData RouteParams -> List Head.Tag
 head app =
     Seo.summary
         { canonicalUrlOverride = Nothing
-        , siteName = "elm-pages"
+        , siteName = "yomek33"
         , image =
             { url =
                 [ "images", "icon-png.png" ]
                     |> UrlPath.join
                     |> Pages.Url.fromPath
-            , alt = "elm-pages logo"
+            , alt = "yomek33 logo"
             , dimensions = Nothing
             , mimeType = Nothing
             }
-        , description = "Welcome to elm-pages!"
+        , description = "Welcome to yomek33!"
         , locale = Nothing
-        , title = "elm-pages is running"
+        , title = "yomek33 is running"
         }
         |> Seo.website
 
 view : App Data ActionData RouteParams -> Shared.Model -> View (PagesMsg Msg)
 view app _ =
-    { title = "Blog Posts"
+    { title = "yomek33"
     , body =
-        [ Html.div [ Html.Attributes.style "display" "flex" ]
-            [ -- メインコンテンツ（記事一覧）
-              Html.div [ Html.Attributes.style "flex" "3" ]
-                [ h1 [] [ text "ブログ記事一覧" ]
-                , ul []
-                    (List.map
-                        (\post ->
-                            li []
-                                [ Route.Blog__Slug_ { slug = post.slug }
-                                    |> Route.link []
-                                        [ Html.div []
-                                            [ text post.title
-                                            , small [] [ text (" - " ++ post.publishedAt) ]
-                                            ]
-                                        ]
-                                ]
-                        )
-                        app.data.posts
-                    )
-                ]
-
-            -- サイドバー
-            , Html.div
-                [ Html.Attributes.style "flex" "1"
-                , Html.Attributes.style "padding-left" "20px"
-                , Html.Attributes.style "border-left" "1px solid #ccc"
-                ]
-                [ h1 [] [ text "カテゴリ一覧" ]
-                , ul []
-                    (List.map
-                        (\category ->
-                            li []
-                                [ Route.Category__Slug_ { slug = category.slug }
-                                    |> Route.link []
-                                        [ text category.name ]
-                                ]
-                        )
-                        app.data.categories
-                    )
-                ]
+        [ div [ class "content-container" ]
+            [ Component.List.postsContainerView "Archive" app.data.posts
+            , Component.List.categoryListComponent app.data.categories
             ]
         ]
     }

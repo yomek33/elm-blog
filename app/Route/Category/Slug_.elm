@@ -10,13 +10,15 @@ import PagesMsg exposing (PagesMsg)
 import RouteBuilder exposing (App, StatelessRoute)
 import Shared
 import View exposing (View)
-
-import Html exposing (h1, li, text, ul)
+import Util
+import Html exposing ( div)
+import Html.Attributes exposing (class)
 import Microcms
 import Route
 import RouteBuilder exposing (App, StatelessRoute)
 import PagesMsg exposing (PagesMsg)
 import View exposing (View)
+import Component.List
 type alias Model =
     {}
 
@@ -41,16 +43,18 @@ pages =
 
 type alias Data =
     { posts : List Microcms.Post
-    , category : String
+    , categories : List Microcms.Category
+    , currentCategory : String
     }
 
-fetchPosts : RouteParams -> BackendTask FatalError Data
-fetchPosts params =
+fetchData :  RouteParams -> BackendTask FatalError Data
+fetchData params =
     Microcms.envTask
         |> BackendTask.andThen 
             (\env ->
-                BackendTask.map2 Data
+                BackendTask.map3 Data
                     (Microcms.getPostsByCategory env params.slug)
+                    (Microcms.getCategories env)
                     (BackendTask.succeed params.slug)
             )
 type alias ActionData =
@@ -60,7 +64,7 @@ route =
     RouteBuilder.preRender
         { head = head
         , pages = pages
-        , data = fetchPosts
+        , data = fetchData
         }
         |> RouteBuilder.buildNoState { view = view }
 
@@ -86,19 +90,11 @@ head app =
 
 view : App Data ActionData RouteParams -> Shared.Model -> View (PagesMsg Msg)
 view app _ =
-    { title = app.data.category ++ " の記事一覧"
+    { title = "\"" ++ app.data.currentCategory ++ "\""
     , body =
-        [ h1 [] [ text (app.data.category ++ " の記事一覧") ]
-        , ul []
-            (List.map
-                (\post ->
-                    li []
-                        [ Route.Blog__Slug_ { slug = post.slug }
-                            |> Route.link []
-                                [ text post.title ]
-                        ]
-                )
-                app.data.posts
-            )
+        [ div [ class "content-container" ]
+              [ Component.List.postsContainerView ("\"" ++ app.data.currentCategory ++ "\"") app.data.posts
+            , Component.List.categoryListComponent app.data.categories
+            ]
         ]
     }

@@ -4,19 +4,18 @@ import BackendTask exposing (BackendTask)
 import FatalError exposing (FatalError)
 import Head
 import Head.Seo as Seo
-import Html exposing (div, h1, text)
+import Html exposing (div, h1, text, small)
 import Pages.Url
 import PagesMsg exposing (PagesMsg)
 import RouteBuilder exposing (App, StatelessRoute)
 import Shared
 import View exposing (View)
 import Microcms
-
-import Server.Request
 import Server.Response
 import ErrorPage
 import HtmlParser
-
+import Util 
+import Html.Attributes exposing (class)
 
 -- MODEL & MESSAGE
 
@@ -84,10 +83,12 @@ head app =
 
 view : App Data ActionData RouteParams -> Shared.Model -> View (PagesMsg Msg)
 view app _ =
-    { title = app.data.post.title
+    { title = "yomek33"
     , body =
-        [ div []
+        [ div [class "article"]
             [ h1 [] [ text app.data.post.title ]
+            , small  [] [text ( Util.trimDate app.data.post.publishedAt)
+            , text (Maybe.withDefault "" (List.head app.data.post.categories |> Maybe.map (.name >> (++) "#")))]
             , case app.data.post.content of
                 Just content ->
                    HtmlParser.parseHtml content

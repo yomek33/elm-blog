@@ -3,7 +3,8 @@ module Shared exposing (Data, Model, Msg(..), SharedMsg(..), template)
 import BackendTask exposing (BackendTask)
 import Effect exposing (Effect)
 import FatalError exposing (FatalError)
-import Html exposing (Html)
+import Html exposing (Attribute, Html, a, button, div, h1, h4, hr, i, img, li, nav, p, span, text, ul)
+import Html.Attributes as Attributes exposing (class, href, style)
 import Html.Events
 import Pages.Flags
 import Pages.PageUrl exposing (PageUrl)
@@ -11,7 +12,7 @@ import UrlPath exposing (UrlPath)
 import Route exposing (Route)
 import SharedTemplate exposing (SharedTemplate)
 import View exposing (View)
-
+import Route exposing (Route(..), link)
 
 template : SharedTemplate Msg Model Data msg
 template =
@@ -94,9 +95,18 @@ view :
 view sharedData page model toMsg pageView =
    { body =
         [ Html.nav [] []
-        , Html.header [] [ Html.text "Header content" ]
+        , viewHeader
         , Html.main_ [] pageView.body
-        , Html.footer [] [ Html.text "Footer content" ]
         ]
     , title = pageView.title
     }
+
+viewHeader : Html msg
+viewHeader =
+    Html.header [] [
+        div [class "header-content"][
+            div [class "title"][link [] [ text "Home" ] Index]
+        ,   div [class "about"][link [] [ text "About" ] About]
+        ]
+        
+    ]

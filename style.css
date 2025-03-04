@@ -1,15 +1,78 @@
-/* ヘッダー */
 header {
   width: 100%;
-  max-width: 1200px; /* 最大幅を設定 */
-  background-color: #333;
-  color: white;
-  padding: 15px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 15px 10px;
+  /* 他のスタイルはそのまま */
+  border-bottom: 2px solid #00205B;
+  background-color: transparent;
   text-align: center;
-  position: relative; /* 固定しない */
-  margin: 0 auto; /* 中央配置 */
 }
 
+.header-content {
+  /* ここも 1200px に合わせる */
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+main {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 15px 10px; /* header と同じにする例 */
+  background: white;
+  border-radius: 8px;
+  text-align: left;
+}
+
+/* タイトルは左寄せ */
+.title {
+  text-align: left;
+  font-size: 2rem;
+  font-weight: bold;
+  padding: 0px 60px; 
+}
+
+/* about は右寄せ */
+.about {
+  text-align: right;
+  font-size: 1rem;
+  padding: 0px 60px; 
+}
+
+/* 共通: ヘッダー内のリンクの色を固定 */
+.header-content a{
+  color: inherit;  /* 親要素の色を継承 */
+  text-decoration: none; /* 下線を消す*/
+}
+
+/* 訪問済みリンクの色を変えない */
+.header-content a:visited,{
+  color: inherit;
+}
+
+/* title 内のリンクだけ太字にする */
+.header-content .title a {
+  font-weight: bold;
+}
+
+body {
+  font-family: "Lato", sans-serif;
+}
+
+h1{
+  font-family: "Lato", sans-serif;
+}
+
+ul {
+    list-style-type: none; /* 箇条書きの点を削除 */
+    padding: 5px;
+}
 /* フッター */
 footer {
   width: 100%;
@@ -32,14 +95,74 @@ body {
   margin: 0;
 }
 
-/* メインコンテンツ */
-main {
-  flex: 1; /* コンテンツが伸縮可能 */
 
-  max-width: 1000px; /* 最大幅を設定 */
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  text-align: left;
-  margin: 20px auto; /* 中央配置 */
+.post-container {
+  /* 左寄せしたいので、横幅いっぱい使ってOKなら width: 100%; */
+  width: 100%;
+  margin: 0 auto;          /* 余計な左右余白を消す */
+  padding: 0;
+  text-align: left;   /* テキストを左揃え */
+  display: flex;      /* 必要に応じてフレックスレイアウト */
+  flex-direction: column;
+  padding: 0px 60px; 
+}
+
+.category-container {
+  flex: 1;               /* 幅の比率を小さめに */
+  padding: 0px 40px;    /* 左側に余白を追加 */
+  border-left: 1px solid #00205B;
+}
+
+.post-list a,
+.category-list a{
+  color: inherit;  /* 親要素の色を継承 */
+  text-decoration: none; /* 下線を消す*/
+}
+.post-list a:visited,{
+  color: inherit;
+}
+
+.post-list li{
+  margin: 4px 0;
+
+}
+
+.post-list-title{
+   font-size: bold;
+  font-family: "Lato", sans-serif;
+  margin: 6px 0 ;
+}
+
+.category-list li{
+  padding:5px;
+}
+.category-list a{
+  font-size: bold;
+  font-family: "Lato", sans-serif;
+  color:#EF696D;
+}
+
+.content-container {
+  display: flex;
+  justify-content: space-between; /* 左にArchive、右にCategory */
+  align-items: flex-start;
+  gap: 1rem;
+  /* こちらも幅を制限しないなら max-width: none; */
+  max-width: none;
+  margin: 0 auto; /* 左右の余白をなくす */
+}
+.post-category-name{
+  font-size: bold;
+  font-family: "Lato", sans-serif;
+  color:#EF696D;
+  padding:0 5px;
+}
+.article a {
+  text-decoration: underline;
+  text-decoration-color: #EF696D;
+  text-decoration-thickness: 2px; /* 下線の太さ */
+  color: black;
+}
+.article a:hover {
+  text-decoration-color:rgb(54, 51, 51);
 }
