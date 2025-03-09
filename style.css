@@ -97,7 +97,6 @@ body {
 
 
 .post-container {
-  /* 左寄せしたいので、横幅いっぱい使ってOKなら width: 100%; */
   width: 100%;
   margin: 0 auto;          /* 余計な左右余白を消す */
   padding: 0;
@@ -147,7 +146,6 @@ body {
   justify-content: space-between; /* 左にArchive、右にCategory */
   align-items: flex-start;
   gap: 1rem;
-  /* こちらも幅を制限しないなら max-width: none; */
   max-width: none;
   margin: 0 auto; /* 左右の余白をなくす */
 }
@@ -165,4 +163,45 @@ body {
 }
 .article a:hover {
   text-decoration-color:rgb(54, 51, 51);
+}
+
+/* 画面幅が768px以下のときのレスポンシブ対応 */
+@media (max-width: 768px) {
+  .content-container {
+    flex-direction: column;
+    padding: 0 10px;
+  }
+
+  .post-container {
+    padding: 0 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Categoryも同様に */
+  .category-container {
+    /* 横並びの境界線がある場合は左側から上側に変更など */
+    border-left: none;
+    border-top: 1px solid #00205B;
+    /* もともと 0px 40px なら小さめに */
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 20px;
+  }
+
+  /* Category内のリストは横並び＆折り返し */
+  .category-list ul {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 10px;
+    padding: 0;
+    margin: 0;
+    justify-content: flex-start; /* 必要に応じて調整 */
+  }
+
+  .category-list li {
+    list-style: none;
+    margin: 0;
+  }
 }

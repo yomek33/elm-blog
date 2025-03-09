@@ -20,22 +20,57 @@ postsContainerView header posts =
         ]
 
 
+
+externalLabel : String -> Maybe String
+externalLabel url =
+    if String.contains "https://zenn.dev/" url then
+        Just "Zenn"
+    else if String.contains "https://medium.com/" url then
+        Just "medium"
+    else
+        Nothing
+
 postItemView : Microcms.Post -> Html.Html (PagesMsg Msg)
 postItemView post =
     li []
-        [ Route.Blog__Slug_ { slug = post.slug }
-            |> Route.link []
-                [ div []
-                    [ h2 [class "post-list-title"]
-                        [text post.title]
-                    , small [] 
-                        [ text (Util.trimDate post.publishedAt)
-                        , span [ class "post-category-name" ] 
-                             [ text (Maybe.withDefault "" (List.head post.categories |> Maybe.map (.name >> (++) "#"))) ]
+        (case post.externalUrl of
+            Just url ->
+                [ Html.a [ Html.Attributes.href url, Html.Attributes.target "_blank" ]
+                    [ div []
+                        [ h2 [ class "post-list-title" ]
+                            ( text post.title
+                                :: (case externalLabel url of
+                                        Just label ->
+                                            [ span [ class "external-label", style "margin-left" "10px", style "color" "#00b7ff" ] [ text label ] ]
+                                        Nothing ->
+                                            []
+                                   )
+                            )
+                        , small [] 
+                            [ text (Util.trimDate post.publishedAt)
+                            , span [ class "post-category-name" ]
+                                [ text (Maybe.withDefault "" (List.head post.categories
+                                    |> Maybe.map (\cat -> "#" ++ cat.name))) ]
+                            ]
                         ]
                     ]
                 ]
-        ]
+            Nothing ->
+                [ Route.Blog__Slug_ { slug = post.slug }
+                    |> Route.link []
+                        [ div []
+                            [ h2 [ class "post-list-title" ]
+                                [ text post.title ]
+                            , small [] 
+                                [ text (Util.trimDate post.publishedAt)
+                                , span [ class "post-category-name" ]
+                                    [ text (Maybe.withDefault "" (List.head post.categories
+                                        |> Maybe.map (\cat -> "#" ++ cat.name))) ]
+                                ]
+                            ]
+                        ]
+                ]
+        )
 
 
 categoryListComponent : List Microcms.Category -> Html.Html (PagesMsg Msg)

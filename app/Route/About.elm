@@ -76,13 +76,11 @@ view :
     -> Shared.Model
     -> View (PagesMsg Msg)
 view app shared =
-    { title = "elm-pages is running"
+    { title = "yomek33 blog"
     , body =
-        [ Html.h1 [] [ Html.text "elm-pages is up and running!" ]
-        , Html.p []
-            [ Html.text <| "The message is: " ++ app.data.message
-            ]
-        , Route.Blog__Slug_ { slug = "hello" }
-            |> Route.link [] [ Html.text "My blog post" ]
+        [Html.div [] 
+        [ Html.h1 [] [ Html.text "yomek33 | Moeka Mishima" ]
+        , Html.p [] [ Html.text "Hello!"]
+        ]
         ]
     }
