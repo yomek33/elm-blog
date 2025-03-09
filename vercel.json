@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npx elm-pages build",
+  "outputDirectory": "dist",
+  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
+}
