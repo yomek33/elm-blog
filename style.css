@@ -52,7 +52,7 @@ main {
 }
 
 /* 訪問済みリンクの色を変えない */
-.header-content a:visited,{
+.header-content a:visited{
   color: inherit;
 }
 
@@ -117,7 +117,7 @@ body {
   color: inherit;  /* 親要素の色を継承 */
   text-decoration: none; /* 下線を消す*/
 }
-.post-list a:visited,{
+.post-list a:visite{
   color: inherit;
 }
 
