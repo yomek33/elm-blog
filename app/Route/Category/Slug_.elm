@@ -1,10 +1,10 @@
 module Route.Category.Slug_ exposing (ActionData, Data, Model, Msg, route)
+import RouteBuilder exposing (StatelessRoute)
 
 import BackendTask exposing (BackendTask)
 import FatalError exposing (FatalError)
 import Head
 import Head.Seo as Seo
-import Html
 import Pages.Url
 import PagesMsg exposing (PagesMsg)
 import RouteBuilder exposing (App, StatelessRoute)
@@ -13,7 +13,6 @@ import View exposing (View)
 import Html exposing ( div)
 import Html.Attributes exposing (class)
 import Microcms
-import Route
 import RouteBuilder exposing (App, StatelessRoute)
 import PagesMsg exposing (PagesMsg)
 import View exposing (View)
