@@ -21,6 +21,7 @@ postsContainerView header posts =
 
 
 
+
 externalLabel : String -> Maybe String
 externalLabel url =
     if String.contains "https://zenn.dev/" url then
