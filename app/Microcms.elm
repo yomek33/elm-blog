@@ -13,7 +13,6 @@ import BackendTask.Http
 import Json.Decode as Decode exposing (Decoder)
 import FatalError exposing (FatalError)
 import BackendTask.Env
-import Debug
 
 
 -- 環境変数 "SERVICE_DOMAIN" と "API_KEY" を取得して Env レコードを作成
@@ -59,19 +58,16 @@ httpGet env path decoder =
         url =
             microCmsURI env ++ path
     in
-    Debug.log ("HTTP GET: " ++ url) url
-        |> (\_ ->
-                BackendTask.Http.getWithOptions
-                    { url = url
-                    , expect = BackendTask.Http.expectJson decoder
-                    , headers = [ ( "X-MICROCMS-API-KEY", env.apiKey ) ]
-                    , cacheStrategy = Just BackendTask.Http.IgnoreCache
-                    , retries = Nothing
-                    , timeoutInMs = Nothing
-                    , cachePath = Nothing
-                    }
-           )
-        |> BackendTask.allowFatal
+    BackendTask.Http.getWithOptions
+        { url = url
+        , expect = BackendTask.Http.expectJson decoder
+        , headers = [ ( "X-MICROCMS-API-KEY", env.apiKey ) ]
+        , cacheStrategy = Just BackendTask.Http.IgnoreCache
+        , retries = Nothing
+        , timeoutInMs = Nothing
+        , cachePath = Nothing
+        }
+    |> BackendTask.allowFatal
 
 
 getPosts : Env -> BackendTask FatalError (List Post)

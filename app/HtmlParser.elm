@@ -12,7 +12,7 @@ parseHtml htmlString =
             div [] (nodesToHtml nodes)
 
         Err errorList ->
-            div [] [ text ("HTML parse error: " ++ Debug.toString errorList) ]
+            div [] [ text "" ]
 
 {-| nodesToHtml は、パースされた Node のリストを Elm の Html ノードのリストに変換 -}
 nodesToHtml : List Parser.Node -> List (Html msg)
