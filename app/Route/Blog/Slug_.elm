@@ -7,7 +7,7 @@ import Head.Seo as Seo
 import Html exposing (div, h1, text, small)
 import Pages.Url
 import PagesMsg exposing (PagesMsg)
-import RouteBuilder exposing (App, StatelessRoute)
+import RouteBuilder exposing (App, StatelessRoute, preRender)
 import Shared
 import View exposing (View)
 import Microcms
@@ -40,26 +40,22 @@ fetchPost params =
     Microcms.envTask
         |> BackendTask.andThen (\env -> Microcms.getPost env params.slug)
 
-
 data : RouteParams -> BackendTask FatalError Data
 data routeParams =
     fetchPost routeParams
         |> BackendTask.map (\post -> { post = post })
 
-
-
 route : StatelessRoute RouteParams Data ActionData
 route =
-    RouteBuilder.serverRender
+    RouteBuilder.preRender
         { head = head
-        , data = \routeParams _ ->
+        , data = \routeParams ->
             fetchPost routeParams
                 |> BackendTask.map (\post -> { post = post })
-                |> BackendTask.map Server.Response.render
-        , action = \_ _ ->
-            BackendTask.succeed (Server.Response.render {})
+        , pages = BackendTask.succeed []
         }
         |> RouteBuilder.buildNoState { view = view }
+
 
 
 
