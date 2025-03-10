@@ -10,7 +10,6 @@ import PagesMsg exposing (PagesMsg)
 import RouteBuilder exposing (App, StatelessRoute)
 import Shared
 import View exposing (View)
-import Util
 import Html exposing ( div)
 import Html.Attributes exposing (class)
 import Microcms

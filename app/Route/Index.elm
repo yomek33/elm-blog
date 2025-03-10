@@ -16,7 +16,6 @@ import Microcms
 import Html exposing ( h1, li, text, ul)
 import Html.Attributes exposing (class, style)
 import Pages.Manifest.Category exposing (utilities)
-import Util exposing(trimDate)
 import Component.List
 
 type alias Model =

@@ -4,7 +4,7 @@ import Html exposing (h1,h3,h2, li, small, text, ul, div, span)
 import Html.Attributes exposing (class, style)
 import Route
 import PagesMsg exposing (PagesMsg)
-import Util
+import HtmlParser
 
 type alias Msg =
     ()
@@ -47,7 +47,7 @@ postItemView post =
                                    )
                             )
                         , small [] 
-                            [ text (Util.trimDate post.publishedAt)
+                            [ text (HtmlParser.trimDate post.publishedAt)
                             , span [ class "post-category-name" ]
                                 [ text (Maybe.withDefault "" (List.head post.categories
                                     |> Maybe.map (\cat -> "#" ++ cat.name))) ]
@@ -62,7 +62,7 @@ postItemView post =
                             [ h2 [ class "post-list-title" ]
                                 [ text post.title ]
                             , small [] 
-                                [ text (Util.trimDate post.publishedAt)
+                                [ text (HtmlParser.trimDate post.publishedAt)
                                 , span [ class "post-category-name" ]
                                     [ text (Maybe.withDefault "" (List.head post.categories
                                         |> Maybe.map (\cat -> "#" ++ cat.name))) ]

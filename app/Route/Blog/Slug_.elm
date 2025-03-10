@@ -14,7 +14,6 @@ import Microcms
 import Server.Response
 import ErrorPage
 import HtmlParser
-import Util 
 import Html.Attributes exposing (class)
 
 -- MODEL & MESSAGE
@@ -87,7 +86,7 @@ view app _ =
     , body =
         [ div [class "article"]
             [ h1 [] [ text app.data.post.title ]
-            , small  [] [text ( Util.trimDate app.data.post.publishedAt)
+            , small  [] [text ( HtmlParser.trimDate app.data.post.publishedAt)
             , text (Maybe.withDefault "" (List.head app.data.post.categories |> Maybe.map (.name >> (++) "#")))]
             , case app.data.post.content of
                 Just content ->

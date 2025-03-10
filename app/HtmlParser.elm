@@ -39,3 +39,11 @@ nodeToHtml node =
 attributeToHtml : (String, String) -> Html.Attribute msg
 attributeToHtml (key, value) =
     Attributes.attribute key value
+
+
+trimDate : String -> String
+trimDate dateTime =
+    dateTime
+        |> String.split "T"
+        |> List.head
+        |> Maybe.withDefault ""
