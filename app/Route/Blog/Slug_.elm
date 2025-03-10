@@ -7,12 +7,10 @@ import Head.Seo as Seo
 import Html exposing (div, h1, text, small)
 import Pages.Url
 import PagesMsg exposing (PagesMsg)
-import RouteBuilder exposing (App, StatelessRoute, preRender)
+import RouteBuilder exposing (App, StatelessRoute)
 import Shared
 import View exposing (View)
 import Microcms
-import Server.Response
-import ErrorPage
 import HtmlParser
 import Html.Attributes exposing (class)
 
@@ -52,7 +50,16 @@ route =
         , data = \routeParams ->
             fetchPost routeParams
                 |> BackendTask.map (\post -> { post = post })
-        , pages = BackendTask.succeed []
+        , pages = 
+            Microcms.envTask
+                |> BackendTask.andThen
+                    (\env -> 
+                        Microcms.getPosts env
+                            |> BackendTask.map
+                                (\posts ->
+                                    List.map (\post -> { slug = post.slug }) posts
+                                )
+                    )
         }
         |> RouteBuilder.buildNoState { view = view }
 
