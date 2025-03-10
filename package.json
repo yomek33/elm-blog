@@ -1,5 +1,5 @@
 {
-  "name": "elm-pages-app",
+  "name": "yomek33",
   "type": "module",
   "scripts": {
     "postinstall": "elm-tooling install",
@@ -10,13 +10,14 @@
     "elm-codegen": "^0.6.1",
     "elm-optimize-level-2": "^0.3.5",
     "elm-pages": "^3.0.19",
-    "elm-review": "^2.12.0",
+    "elm-review": "^2.13.2",
     "elm-tooling": "^1.15.1",
     "lamdera": "^0.19.1-1.3.2",
     "vite": "^6.0.6"
   },
   "dependencies": {
     "@netlify/functions": "^3.0.0",
-    "dotenv": "^16.4.7"
+    "dotenv": "^16.4.7",
+    "elm": "^0.19.1-6"
   }
 }
