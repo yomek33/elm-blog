@@ -12,7 +12,7 @@ import Route
 import RouteBuilder exposing (App, StatelessRoute)
 import Shared
 import View exposing (View)
-
+import Html.Attributes exposing (href, rel, target)
 
 type alias Model =
     {}
@@ -79,8 +79,10 @@ view app shared =
     { title = "yomek33 blog"
     , body =
         [Html.div [] 
-        [ Html.h1 [] [ Html.text "yomek33 | Moeka Mishima" ]
+        [ Html.h1 [] [ Html.text "yomek33"]
         , Html.p [] [ Html.text "Hello!"]
+        , Html.div [] [ Html.a [href "https://github.com/yomek33",  rel "noopener noreferrer", target "_blank" ][ Html.text "https://github.com/yomek33"] ]
+        ,Html.div [] [ Html.a [href "https://x.com/yomek33",  rel "noopener noreferrer", target "_blank" ][ Html.text "https://x.com/yomek33"] ]
         ]
         ]
     }

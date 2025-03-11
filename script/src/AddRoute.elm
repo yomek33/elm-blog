@@ -6,9 +6,8 @@ import Cli.OptionsParser as OptionsParser
 import Cli.Program as Program
 import Elm
 import Elm.Annotation as Type
-import Elm.Arg
 import Elm.Case
-import Elm.Declare exposing (Function, fn2)
+import Elm.Declare
 import Elm.Let
 import Elm.Op
 import Gen.BackendTask
@@ -98,8 +97,8 @@ createFile { moduleName, fields } =
                                     )
                             )
                             |> Elm.Let.fn2 "fieldView"
-                                (Elm.Arg.var "label")
-                                (Elm.Arg.var "field")
+                                ( "label", Type.string |> Just )
+                                ( "field", Nothing )
                                 (\label field ->
                                     Html.div []
                                         [ Html.label []
@@ -132,71 +131,57 @@ createFile { moduleName, fields } =
                         (\justFormHelp ->
                             Request.formData justFormHelp.formHandlers request
                                 |> Gen.Maybe.call_.map
-                                    (Elm.fn (Elm.Arg.var "formData")
+                                    (Elm.fn ( "formData", Nothing )
                                         (\formData ->
-                                            Elm.Case.custom
-                                                formData
-                                                Type.unit
-                                                [ Elm.Case.branch
-                                                    (Elm.Arg.tuple
-                                                        (Elm.Arg.var "response")
-                                                        (Elm.Arg.var "parsedForm")
-                                                    )
-                                                    (\( response, parsedForm ) ->
-                                                        Elm.Case.custom parsedForm
-                                                            Type.int
-                                                            [ Elm.Case.branch
-                                                                (Elm.Arg.customType "Form.Valid" identity
-                                                                    |> Elm.Arg.item (Elm.Arg.var "validatedForm")
-                                                                )
-                                                                (\validatedForm ->
-                                                                    Elm.Case.custom validatedForm
-                                                                        Type.int
-                                                                        [ Elm.Case.branch
-                                                                            (Elm.Arg.customType "Action" identity
-                                                                                |> Elm.Arg.item (Elm.Arg.var "parsed")
-                                                                            )
-                                                                            (\parsed ->
-                                                                                Scaffold.Form.recordEncoder parsed fields
-                                                                                    |> Gen.Json.Encode.encode 2
-                                                                                    |> Gen.Pages.Script.call_.log
-                                                                                    |> Gen.BackendTask.call_.map
-                                                                                        (Elm.fn Elm.Arg.ignore
-                                                                                            (\_ ->
-                                                                                                Response.render
-                                                                                                    (Elm.record
-                                                                                                        [ ( "errors", response )
-                                                                                                        ]
-                                                                                                    )
-                                                                                            )
+                                            Elm.Case.tuple formData
+                                                "response"
+                                                "parsedForm"
+                                                (\response parsedForm ->
+                                                    Elm.Case.custom parsedForm
+                                                        Type.int
+                                                        [ Elm.Case.branch1 "Form.Valid"
+                                                            ( "validatedForm", Type.int )
+                                                            (\validatedForm ->
+                                                                Elm.Case.custom validatedForm
+                                                                    Type.int
+                                                                    [ Elm.Case.branch1 "Action"
+                                                                        ( "parsed", Type.int )
+                                                                        (\parsed ->
+                                                                            Scaffold.Form.recordEncoder parsed fields
+                                                                                |> Gen.Json.Encode.encode 2
+                                                                                |> Gen.Pages.Script.call_.log
+                                                                                |> Gen.BackendTask.call_.map
+                                                                                    (Elm.fn ( "_", Nothing )
+                                                                                        (\_ ->
+                                                                                            Response.render
+                                                                                                (Elm.record
+                                                                                                    [ ( "errors", response )
+                                                                                                    ]
+                                                                                                )
                                                                                         )
+                                                                                    )
+                                                                        )
+                                                                    ]
+                                                            )
+                                                        , Elm.Case.branch2 "Form.Invalid"
+                                                            ( "parsed", Type.int )
+                                                            ( "error", Type.int )
+                                                            (\_ _ ->
+                                                                "Form validations did not succeed!"
+                                                                    |> Gen.Pages.Script.log
+                                                                    |> Gen.BackendTask.call_.map
+                                                                        (Elm.fn ( "_", Nothing )
+                                                                            (\_ ->
+                                                                                Response.render
+                                                                                    (Elm.record
+                                                                                        [ ( "errors", response )
+                                                                                        ]
+                                                                                    )
                                                                             )
-                                                                        ]
-                                                                )
-                                                            , Elm.Case.branch
-                                                                (Elm.Arg.customType
-                                                                    "Form.Invalid"
-                                                                    Tuple.pair
-                                                                    |> Elm.Arg.item (Elm.Arg.var "parsed")
-                                                                    |> Elm.Arg.item (Elm.Arg.var "error")
-                                                                )
-                                                                (\( _, _ ) ->
-                                                                    "Form validations did not succeed!"
-                                                                        |> Gen.Pages.Script.log
-                                                                        |> Gen.BackendTask.call_.map
-                                                                            (Elm.fn Elm.Arg.ignore
-                                                                                (\_ ->
-                                                                                    Response.render
-                                                                                        (Elm.record
-                                                                                            [ ( "errors", response )
-                                                                                            ]
-                                                                                        )
-                                                                                )
-                                                                            )
-                                                                )
-                                                            ]
-                                                    )
-                                                ]
+                                                                        )
+                                                            )
+                                                        ]
+                                                )
                                         )
                                     )
                                 |> Gen.Maybe.withDefault
@@ -259,10 +244,9 @@ createFile { moduleName, fields } =
                 \{ shared, app, msg, model } ->
                     Elm.Case.custom msg
                         (Type.named [] "Msg")
-                        [ Elm.Case.branch (Elm.Arg.customType "NoOp" ())
-                            (\() ->
-                                Elm.tuple model
-                                    Effect.none
+                        [ Elm.Case.branch0 "NoOp"
+                            (Elm.tuple model
+                                Effect.none
                             )
                         ]
             , init =
@@ -278,11 +262,24 @@ createFile { moduleName, fields } =
             }
 
 
-errorsView : Function (Elm.Expression -> Elm.Expression -> Elm.Expression)
+errorsView :
+    { declaration : Elm.Declaration
+    , call : Elm.Expression -> Elm.Expression -> Elm.Expression
+    , callFrom : List String -> Elm.Expression -> Elm.Expression -> Elm.Expression
+    , value : List String -> Elm.Expression
+    }
 errorsView =
-    fn2 "errorsView"
-        (Elm.Arg.var "errors")
-        (Elm.Arg.var "field")
+    Elm.Declare.fn2 "errorsView"
+        ( "errors", Type.namedWith [ "Form" ] "Errors" [ Type.string ] |> Just )
+        ( "field"
+        , Type.namedWith [ "Form", "Validation" ]
+            "Field"
+            [ Type.string
+            , Type.var "parsed"
+            , Type.var "kind"
+            ]
+            |> Just
+        )
         (\errors field ->
             Elm.ifThen
                 (Gen.List.call_.isEmpty (Form.errorsForField field errors))
@@ -291,7 +288,7 @@ errorsView =
                     []
                     [ Html.call_.ul (Elm.list [])
                         (Gen.List.call_.map
-                            (Elm.fn (Elm.Arg.var "error")
+                            (Elm.fn ( "error", Nothing )
                                 (\error ->
                                     Html.li
                                         [ Attr.style "color" "red"

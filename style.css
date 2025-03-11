@@ -167,9 +167,16 @@ body {
 
 /* 画面幅が768px以下のときのレスポンシブ対応 */
 @media (max-width: 768px) {
+    .title {
+    text-align: left;
+    font-size: 2rem;
+    font-weight: bold;
+    padding: 0px 20px; 
+  }
   .content-container {
     flex-direction: column;
     padding: 0 10px;
+    width: 100%;
   }
 
   .post-container {
