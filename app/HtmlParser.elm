@@ -31,7 +31,6 @@ nodeToHtml node =
             Html.node tag (List.map attributeToHtml attrs) (nodesToHtml children)
 
         Parser.Comment _ ->
-            -- コメントは表示しない（必要なら別の処理も可能）
             text ""
 
 

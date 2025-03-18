@@ -5,6 +5,7 @@ import Html.Attributes exposing (class, style)
 import Route
 import PagesMsg exposing (PagesMsg)
 import HtmlParser
+import Microcms exposing (getPostsByCategory)
 
 type alias Msg =
     ()
@@ -33,6 +34,16 @@ externalLabel url =
 
 postItemView : Microcms.Post -> Html.Html (PagesMsg Msg)
 postItemView post =
+    let
+        categorySpans = 
+            List.map 
+                (\cat -> 
+                    span [ class "post-category-name" ]
+                        [ text ("#" ++ cat.name) ]
+                ) 
+                post.categories
+    in
+    
     li []
         (case post.externalUrl of
             Just url ->
@@ -49,9 +60,8 @@ postItemView post =
                             )
                         , small [] 
                             [ text (HtmlParser.trimDate post.publishedAt)
-                            , span [ class "post-category-name" ]
-                                [ text (Maybe.withDefault "" (List.head post.categories
-                                    |> Maybe.map (\cat -> "#" ++ cat.name))) ]
+                            , span [class "post-category-name"] 
+                                categorySpans
                             ]
                         ]
                     ]
