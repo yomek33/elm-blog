@@ -56,7 +56,7 @@ init :
             , pageUrl : Maybe PageUrl
             }
     -> ( Model, Effect Msg )
-init flags maybePagePath =
+init _ _ =
     ( { showMenu = False }
     , Effect.none
     )
@@ -65,7 +65,7 @@ init flags maybePagePath =
 update : Msg -> Model -> ( Model, Effect Msg )
 update msg model =
     case msg of
-        SharedMsg globalMsg ->
+        SharedMsg _ ->
             ( model, Effect.none )
 
         MenuClicked ->
@@ -92,10 +92,9 @@ view :
     -> (Msg -> msg)
     -> View msg
     -> { body : List (Html msg), title : String }
-view sharedData page model toMsg pageView =
+view _ _ _ _ pageView =
    { body =
-        [ Html.nav [] []
-        , viewHeader
+        [  viewHeader
         , Html.main_ [] pageView.body
         ]
     , title = pageView.title
@@ -108,5 +107,4 @@ viewHeader =
             div [class "title"][link [] [ text "Home" ] Index]
         ,   div [class "about"][link [] [ text "About" ] About]
         ]
-        
     ]

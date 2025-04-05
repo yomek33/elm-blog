@@ -2,8 +2,6 @@ module HtmlParser exposing (..)
 import Html exposing (Html, div, node, text)
 import Html.Attributes as Attributes
 import Html.Parser as Parser
-import Debug
-
 
 parseHtml : String -> Html msg
 parseHtml htmlString =
@@ -14,13 +12,13 @@ parseHtml htmlString =
         Err errorList ->
             div [] [ text "" ]
 
-{-| nodesToHtml は、パースされた Node のリストを Elm の Html ノードのリストに変換 -}
+{-| パースされたNodeのリストをElmのHtmlノードのリストに変換 -}
 nodesToHtml : List Parser.Node -> List (Html msg)
 nodesToHtml nodes =
     List.map nodeToHtml nodes
 
 
-{-| nodeToHtml は、1 つの Parser.Node を Elm の Html に再帰的に変換 -}
+{-| Parser.NodeをElmのHtmlに再帰的に変換 -}
 nodeToHtml : Parser.Node -> Html msg
 nodeToHtml node =
     case node of
@@ -34,7 +32,7 @@ nodeToHtml node =
             text ""
 
 
-{-| attributeToHtml は、(String, String) 型の属性を Elm の Html.Attribute に変換 -}
+{-| (String, String)をElmのHtml.Attribute に変換 -}
 attributeToHtml : (String, String) -> Html.Attribute msg
 attributeToHtml (key, value) =
     Attributes.attribute key value

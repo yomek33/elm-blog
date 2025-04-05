@@ -4,7 +4,7 @@ import BackendTask exposing (BackendTask)
 import FatalError exposing (FatalError)
 import Head
 import Head.Seo as Seo
-import Html exposing (h1,h3, li, small, text, ul, div)
+import Html exposing (div)
 import Pages.Url
 import PagesMsg exposing (PagesMsg)
 import UrlPath
@@ -13,9 +13,7 @@ import RouteBuilder exposing (App, StatelessRoute)
 import Shared
 import View exposing (View)
 import Microcms
-import Html exposing ( h1, li, text, ul)
-import Html.Attributes exposing (class, style)
-import Pages.Manifest.Category exposing (utilities)
+import Html.Attributes exposing (class)
 import Component.List
 
 type alias Model =
